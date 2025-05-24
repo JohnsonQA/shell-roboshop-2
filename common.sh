@@ -1,5 +1,13 @@
 #!/bin/bash
 
+set -e
+
+failure(){
+    echo "Script failed in: $1 $2"
+}
+
+trap 'failure "${LINENO}" "${BASH_COMMAND}"' ERR
+
 START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
@@ -22,12 +30,35 @@ nodejs_setup(){
     dnf module enable nodejs:20 -y &>>$LOG_FILE
     VALIDATE $? "Enabled required nodejs version"
 
-    dnf install nodejs -y &>>$LOG_FILE
+    dnf install nodejsdgdgd -y &>>$LOG_FILE
     VALIDATE $? "Installed nodejs"
 
     npm install &>>$LOG_FILE
     VALIDATE $? "Installed npm pkgm"
 }
+
+#Clean - Deletes the target directory to ensure we are starting fresh without any old build artifacts
+# Pacakge - compiles source code and run if any tests are there and packages the compiled code into JAR
+#Renames the generated JAR file as shipping.jar for better readabiity and versioning handle
+maven_setup(){
+    dnf install maven -y &>>$LOG_FILE
+    VALIDATE $? "Installing Maven and Java"
+
+    mvn clean package  &>>$LOG_FILE
+    VALIDATE $? "Packaging the shipping application"
+
+    mv target/shipping-1.0.jar shipping.jar  &>>$LOG_FILE
+    VALIDATE $? "Moving and renaming Jar file"
+}
+
+python_setup(){
+    dnf install python3 gcc python3-devel -y &>>$LOG_FILE
+    VALIDATE $? "Install Python3 packages"
+
+    pip3 install -r requirements.txt &>>$LOG_FILE
+    VALIDATE $? "Installing dependencies"
+}
+
 
 app_setup(){
     id roboshop &>>$LOG_FILE

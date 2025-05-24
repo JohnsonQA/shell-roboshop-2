@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ./common.sh
-APP_NAME="user"
+APP_NAME="user-set"
 
 check_root
 app_setup
