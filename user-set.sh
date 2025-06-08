@@ -1,11 +1,12 @@
 #!/bin/bash
-
+#using set and trap we can handle errors. It shows up line number and which command failed
 set -e
 
 failure(){
     echo "Script failed at: $1 $2"
 }
 trap 'failure "${LINENO}" "${BASH_COMMAND}"' err 
+
 START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
